@@ -158,8 +158,10 @@ export class Avatar extends FASTElement {
     color: string;
     fill: string;
     imgSrc: string;
+    initials: string;
     link: string;
     name: string;
+    protected nameChanged(): void;
     shape: string;
 }
 
