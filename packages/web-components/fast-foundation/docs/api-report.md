@@ -391,6 +391,9 @@ export function createDataGridRowTemplate(prefix: string): ViewTemplate;
 export function createDataGridTemplate(prefix: string): ViewTemplate;
 
 // @public
+export function createListPickerTemplate(prefix: string, itemTemplate: ViewTemplate, optionTemplate: ViewTemplate): ViewTemplate;
+
+// @public
 export function createTooltipTemplate(prefix: string): ViewTemplate;
 
 // @public
@@ -1135,6 +1138,48 @@ export enum ListboxRole {
 
 // @public
 export const ListboxTemplate: import("@microsoft/fast-element").ViewTemplate<Listbox, any>;
+
+// @public
+export class ListPicker extends FASTElement {
+    // (undocumented)
+    availableOptions: string[];
+    // @internal (undocumented)
+    connectedCallback(): void;
+    // @internal (undocumented)
+    defaultItemTemplate: ViewTemplate;
+    // @internal (undocumented)
+    defaultOptionTemplate: ViewTemplate;
+    // (undocumented)
+    defaultSelection: string;
+    // (undocumented)
+    handleFocusOut: (e: FocusEvent) => void;
+    // (undocumented)
+    handleOptionClick: (e: MouseEvent) => boolean;
+    // (undocumented)
+    handleRegionLoaded: (e: Event) => void;
+    // (undocumented)
+    handleTextInput: (e: InputEvent) => void;
+    // @internal
+    inputBox: HTMLElement;
+    // @internal (undocumented)
+    itemTemplate: ViewTemplate;
+    // @internal
+    listbox: HTMLElement;
+    // @internal (undocumented)
+    listboxOpen: boolean;
+    // @internal
+    optionElements: HTMLElement[];
+    // (undocumented)
+    options: string;
+    // @internal (undocumented)
+    optionTemplate: ViewTemplate;
+    // @internal (undocumented)
+    region: AnchoredRegion;
+    // (undocumented)
+    selectedOptions: string[];
+    // (undocumented)
+    selection: string;
+    }
 
 // @public
 export abstract class MatchMediaBehavior implements Behavior {
