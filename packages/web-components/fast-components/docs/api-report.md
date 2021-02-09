@@ -29,6 +29,7 @@ import { IDynamicPerson } from '@microsoft/mgt';
 import { Listbox } from '@microsoft/fast-foundation';
 import { ListboxOption } from '@microsoft/fast-foundation';
 import { ListPicker } from '@microsoft/fast-foundation';
+import { ListPickerMenu } from '@microsoft/fast-foundation';
 import { Menu } from '@microsoft/fast-foundation';
 import { MenuItem } from '@microsoft/fast-foundation';
 import { NumberField } from '@microsoft/fast-foundation';
@@ -593,6 +594,10 @@ export class FASTOption extends ListboxOption {
 export class FASTPeoplePicker extends PeoplePicker {
 }
 
+// @public (undocumented)
+export class FASTPeoplePickerMenu extends ListPickerMenu {
+}
+
 // @public
 export class FASTProgress extends BaseProgress {
 }
@@ -1105,6 +1110,9 @@ export enum PaletteType {
 
 // @public
 export const parseColorString: (color: string) => ColorRGBA64;
+
+// @public
+export const PeoplePickerMenuStyles: import("@microsoft/fast-element").ElementStyles;
 
 // @public
 export const PeoplePickerStyles: import("@microsoft/fast-element").ElementStyles;

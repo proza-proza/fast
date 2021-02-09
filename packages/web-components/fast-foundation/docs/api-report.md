@@ -391,6 +391,9 @@ export function createDataGridRowTemplate(prefix: string): ViewTemplate;
 export function createDataGridTemplate(prefix: string): ViewTemplate;
 
 // @public
+export function createListPickerMenuTemplate(prefix: string): ViewTemplate;
+
+// @public
 export function createListPickerTemplate(prefix: string, itemTemplate: ViewTemplate, optionTemplate: ViewTemplate): ViewTemplate;
 
 // @public
@@ -1151,8 +1154,6 @@ export class ListPicker extends FASTElement {
     defaultOptionTemplate: ViewTemplate;
     // (undocumented)
     defaultSelection: string;
-    // @internal
-    generatedOptionElements: HTMLElement[];
     // (undocumented)
     handleFocusOut: (e: FocusEvent) => void;
     // (undocumented)
@@ -1177,25 +1178,23 @@ export class ListPicker extends FASTElement {
     listboxId: string;
     // @internal (undocumented)
     listboxOpen: boolean;
+    // @internal
+    optionElements: HTMLElement[];
     // (undocumented)
     options: string;
     // @internal (undocumented)
     optionTemplate: ViewTemplate;
-    // @internal
-    postOptionRegion: HTMLElement;
-    // @internal
-    preOptionRegion: HTMLElement;
     // @internal (undocumented)
     region: AnchoredRegion;
     // (undocumented)
     selectedOptions: string[];
     // (undocumented)
     selection: string;
-    // @internal (undocumented)
-    slottedPostOptions: HTMLElement[];
-    // @internal (undocumented)
-    slottedPreOptions: HTMLElement[];
     }
+
+// @public
+export class ListPickerMenu extends FASTElement {
+}
 
 // @public
 export abstract class MatchMediaBehavior implements Behavior {
