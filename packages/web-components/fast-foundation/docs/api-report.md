@@ -394,7 +394,7 @@ export function createDataGridTemplate(prefix: string): ViewTemplate;
 export function createListPickerMenuTemplate(prefix: string): ViewTemplate;
 
 // @public
-export function createListPickerTemplate(prefix: string, itemTemplate: ViewTemplate, optionTemplate: ViewTemplate): ViewTemplate;
+export function createListPickerTemplate(prefix: string, menuTag: string, itemTemplate: ViewTemplate, optionTemplate: ViewTemplate): ViewTemplate;
 
 // @public
 export function createTooltipTemplate(prefix: string): ViewTemplate;
@@ -1194,7 +1194,11 @@ export class ListPicker extends FASTElement {
 
 // @public
 export class ListPickerMenu extends FASTElement {
-}
+    // @internal (undocumented)
+    connectedCallback(): void;
+    // (undocumented)
+    testing: string;
+    }
 
 // @public
 export abstract class MatchMediaBehavior implements Behavior {
