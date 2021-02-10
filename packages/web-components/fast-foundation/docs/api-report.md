@@ -391,10 +391,10 @@ export function createDataGridRowTemplate(prefix: string): ViewTemplate;
 export function createDataGridTemplate(prefix: string): ViewTemplate;
 
 // @public
-export function createListPickerMenuTemplate(prefix: string): ViewTemplate;
+export function createPickerMenuTemplate(prefix: string): ViewTemplate;
 
 // @public
-export function createListPickerTemplate(prefix: string, menuTag: string, itemTemplate: ViewTemplate, optionTemplate: ViewTemplate): ViewTemplate;
+export function createPickerTemplate(prefix: string, subtype: string, itemTemplate: ViewTemplate, optionTemplate: ViewTemplate): ViewTemplate;
 
 // @public
 export function createTooltipTemplate(prefix: string): ViewTemplate;
@@ -1143,64 +1143,6 @@ export enum ListboxRole {
 export const ListboxTemplate: import("@microsoft/fast-element").ViewTemplate<Listbox, any>;
 
 // @public
-export class ListPicker extends FASTElement {
-    // (undocumented)
-    availableOptions: string[];
-    // @internal (undocumented)
-    connectedCallback(): void;
-    // @internal (undocumented)
-    defaultItemTemplate: ViewTemplate;
-    // @internal (undocumented)
-    defaultOptionTemplate: ViewTemplate;
-    // (undocumented)
-    defaultSelection: string;
-    // (undocumented)
-    handleFocusOut: (e: FocusEvent) => void;
-    // (undocumented)
-    handleInputKeyDown: (e: KeyboardEvent) => boolean;
-    // (undocumented)
-    handleOptionClick: (e: MouseEvent) => boolean;
-    // (undocumented)
-    handleRegionLoaded: (e: Event) => void;
-    // (undocumented)
-    handleTextInput: (e: InputEvent) => boolean;
-    // @internal
-    inputBox: HTMLElement;
-    // @internal (undocumented)
-    itemTemplate: ViewTemplate;
-    // @internal
-    listbox: HTMLElement;
-    // @internal (undocumented)
-    listboxFocusIndex: number;
-    // @internal (undocumented)
-    listboxFocusOptionId: string | null;
-    // @internal (undocumented)
-    listboxId: string;
-    // @internal (undocumented)
-    listboxOpen: boolean;
-    // @internal
-    optionElements: HTMLElement[];
-    // (undocumented)
-    options: string;
-    // @internal (undocumented)
-    optionTemplate: ViewTemplate;
-    // @internal (undocumented)
-    region: AnchoredRegion;
-    // (undocumented)
-    selectedOptions: string[];
-    // (undocumented)
-    selection: string;
-    }
-
-// @public
-export class ListPickerMenu extends FASTElement {
-    // @internal (undocumented)
-    connectedCallback(): void;
-    // (undocumented)
-    testing: string;
-    }
-
-// @public
 export abstract class MatchMediaBehavior implements Behavior {
     constructor(query: MediaQueryList);
     bind(source: typeof FASTElement & HTMLElement): void;
@@ -1333,6 +1275,64 @@ export type OverrideFoundationElementDefinition = Partial<Omit<FoundationElement
 
 // @alpha (undocumented)
 export type ParentLocator = (owner: any) => Container | null;
+
+// @public
+export class Picker extends FASTElement {
+    // (undocumented)
+    availableOptions: string[];
+    // @internal (undocumented)
+    connectedCallback(): void;
+    // @internal (undocumented)
+    defaultItemTemplate: ViewTemplate;
+    // @internal (undocumented)
+    defaultOptionTemplate: ViewTemplate;
+    // (undocumented)
+    defaultSelection: string;
+    // (undocumented)
+    handleFocusOut: (e: FocusEvent) => void;
+    // (undocumented)
+    handleInputKeyDown: (e: KeyboardEvent) => boolean;
+    // (undocumented)
+    handleOptionClick: (e: MouseEvent) => boolean;
+    // (undocumented)
+    handleRegionLoaded: (e: Event) => void;
+    // (undocumented)
+    handleTextInput: (e: InputEvent) => boolean;
+    // @internal
+    inputBox: HTMLElement;
+    // @internal (undocumented)
+    itemTemplate: ViewTemplate;
+    // @internal
+    listbox: HTMLElement;
+    // @internal (undocumented)
+    listboxFocusIndex: number;
+    // @internal (undocumented)
+    listboxFocusOptionId: string | null;
+    // @internal (undocumented)
+    listboxId: string;
+    // @internal (undocumented)
+    listboxOpen: boolean;
+    // @internal
+    optionElements: HTMLElement[];
+    // (undocumented)
+    options: string;
+    // @internal (undocumented)
+    optionTemplate: ViewTemplate;
+    // @internal (undocumented)
+    region: AnchoredRegion;
+    // (undocumented)
+    selectedOptions: string[];
+    // (undocumented)
+    selection: string;
+    }
+
+// @public
+export class PickerMenu extends FASTElement {
+    // @internal (undocumented)
+    connectedCallback(): void;
+    // (undocumented)
+    testing: string;
+    }
 
 // @public
 export const ProgressRingTemplate: import("@microsoft/fast-element").ViewTemplate<BaseProgress, any>;
