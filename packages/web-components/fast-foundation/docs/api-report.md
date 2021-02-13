@@ -390,6 +390,12 @@ export function createDataGridRowTemplate(prefix: string): ViewTemplate;
 // @public
 export function createDataGridTemplate(prefix: string): ViewTemplate;
 
+// @public (undocumented)
+export function createPickerInputTemplate(prefix: string): ViewTemplate;
+
+// @public (undocumented)
+export function createPickerListTemplate(prefix: string): ViewTemplate;
+
 // @public
 export function createPickerMenuTemplate(prefix: string): ViewTemplate;
 
@@ -1291,19 +1297,17 @@ export class Picker extends FASTElement {
     // (undocumented)
     handleFocusOut: (e: FocusEvent) => void;
     // (undocumented)
-    handleInputKeyDown: (e: KeyboardEvent) => boolean;
+    handleInputKeyDown: (e: KeyboardEvent) => void;
     // (undocumented)
     handleOptionClick: (e: MouseEvent) => boolean;
     // (undocumented)
     handleRegionLoaded: (e: Event) => void;
     // (undocumented)
-    handleTextInput: (e: InputEvent) => boolean;
+    handleTextInput: (e: InputEvent) => void;
     // @internal
-    inputBox: HTMLElement;
+    inputElement: HTMLElement;
     // @internal (undocumented)
     itemTemplate: ViewTemplate;
-    // @internal
-    listbox: HTMLElement;
     // @internal (undocumented)
     listboxFocusIndex: number;
     // @internal (undocumented)
@@ -1313,13 +1317,21 @@ export class Picker extends FASTElement {
     // @internal (undocumented)
     listboxOpen: boolean;
     // @internal
-    optionElements: HTMLElement[];
+    menuElement: PickerMenu;
     // (undocumented)
     options: string;
     // @internal (undocumented)
     optionTemplate: ViewTemplate;
     // @internal (undocumented)
+    pickerinputtag: string;
+    // @internal (undocumented)
+    pickermenutag: string;
+    // @internal (undocumented)
     region: AnchoredRegion;
+    // @internal
+    selectedList: HTMLElement;
+    // @internal (undocumented)
+    selectedlisttag: string;
     // (undocumented)
     selectedOptions: string[];
     // (undocumented)
@@ -1327,12 +1339,20 @@ export class Picker extends FASTElement {
     }
 
 // @public
+export class PickerInput extends FASTElement {
+}
+
+// @public
+export class PickerList extends FASTElement {
+}
+
+// @public
 export class PickerMenu extends FASTElement {
     // @internal (undocumented)
     connectedCallback(): void;
-    // (undocumented)
-    testing: string;
-    }
+    // @internal
+    optionElements: HTMLElement[];
+}
 
 // @public
 export const ProgressRingTemplate: import("@microsoft/fast-element").ViewTemplate<BaseProgress, any>;
