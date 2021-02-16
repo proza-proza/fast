@@ -1281,11 +1281,9 @@ export type ParentLocator = (owner: any) => Container | null;
 
 // @public
 export class Picker extends FASTElement {
-    // (undocumented)
-    availableOptions: string[];
     // @internal (undocumented)
     connectedCallback(): void;
-    // @internal (undocumented)
+    // (undocumented)
     defaultItemTemplate: ViewTemplate;
     // @internal (undocumented)
     defaultOptionTemplate: ViewTemplate;
@@ -1303,7 +1301,7 @@ export class Picker extends FASTElement {
     handleTextInput: (e: InputEvent) => void;
     // @internal
     inputElement: HTMLElement;
-    // @internal (undocumented)
+    // (undocumented)
     itemTemplate: ViewTemplate;
     // @internal (undocumented)
     listboxFocusIndex: number;
@@ -1317,6 +1315,8 @@ export class Picker extends FASTElement {
     menuElement: PickerMenu;
     // (undocumented)
     options: string;
+    // (undocumented)
+    optionsList: string[];
     // @internal (undocumented)
     optionTemplate: ViewTemplate;
     // @internal (undocumented)
@@ -1331,6 +1331,8 @@ export class Picker extends FASTElement {
     selectedOptions: string[];
     // (undocumented)
     selection: string;
+    // @internal
+    slottedMenuElements: HTMLElement[];
     }
 
 // @public

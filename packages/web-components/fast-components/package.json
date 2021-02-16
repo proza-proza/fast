@@ -117,6 +117,9 @@
     "@microsoft/fast-element": "^0.22.2",
     "@microsoft/fast-foundation": "^1.14.0",
     "@microsoft/fast-web-utilities": "^4.7.3",
+    "@microsoft/mgt": "^2.0.1",
+    "@microsoft/mgt-element": "^2.0.1",
+    "@microsoft/mgt-msal-provider": "^2.0.1",
     "tslib": "^1.13.0"
   },
   "peerDependencies": {
