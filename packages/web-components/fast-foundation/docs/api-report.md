@@ -1294,13 +1294,13 @@ export class Picker extends FASTElement {
     // (undocumented)
     handleInputKeyDown: (e: KeyboardEvent) => boolean;
     // (undocumented)
-    handleOptionClick: (e: MouseEvent) => boolean;
+    handleOptionClick: (e: MouseEvent, value: string) => boolean;
     // (undocumented)
     handleRegionLoaded: (e: Event) => void;
     // (undocumented)
     handleTextInput: (e: InputEvent) => void;
     // @internal
-    inputElement: HTMLElement;
+    inputElement: HTMLInputElement;
     // (undocumented)
     itemTemplate: ViewTemplate;
     // @internal (undocumented)
