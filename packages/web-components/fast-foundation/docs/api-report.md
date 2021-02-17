@@ -1290,11 +1290,15 @@ export class Picker extends FASTElement {
     // (undocumented)
     defaultSelection: string;
     // (undocumented)
+    disconnectedCallback(): void;
+    // (undocumented)
     handleFocusOut: (e: FocusEvent) => void;
     // (undocumented)
-    handleInputKeyDown: (e: KeyboardEvent) => boolean;
+    handleInputClick: (e: MouseEvent) => void;
     // (undocumented)
     handleItemClick: (e: MouseEvent, itemIndex: number) => boolean;
+    // (undocumented)
+    handleKeyDown: (e: KeyboardEvent) => boolean;
     // (undocumented)
     handleOptionClick: (e: MouseEvent, value: string) => boolean;
     // (undocumented)
