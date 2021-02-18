@@ -1298,6 +1298,8 @@ export class Picker extends FASTElement {
     // (undocumented)
     handleItemClick: (e: MouseEvent, itemIndex: number) => boolean;
     // (undocumented)
+    handleItemKeyDown: (e: KeyboardEvent, itemIndex: number) => boolean;
+    // (undocumented)
     handleKeyDown: (e: KeyboardEvent) => boolean;
     // (undocumented)
     handleOptionClick: (e: MouseEvent, value: string) => boolean;
@@ -1310,15 +1312,15 @@ export class Picker extends FASTElement {
     // (undocumented)
     itemTemplate: ViewTemplate;
     // @internal (undocumented)
-    listboxFocusIndex: number;
-    // @internal (undocumented)
-    listboxFocusOptionId: string | null;
-    // @internal (undocumented)
-    listboxId: string;
-    // @internal (undocumented)
     listboxOpen: boolean;
     // @internal
     menuElement: PickerMenu;
+    // @internal (undocumented)
+    menuFocusIndex: number;
+    // @internal (undocumented)
+    menuFocusOptionId: string | null;
+    // @internal (undocumented)
+    menuId: string;
     // (undocumented)
     options: string;
     // (undocumented)
