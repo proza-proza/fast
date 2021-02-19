@@ -1306,6 +1306,8 @@ export class Picker extends FASTElement {
     // (undocumented)
     handleRegionLoaded: (e: Event) => void;
     // (undocumented)
+    handleRegionPositionChange: (e: Event) => void;
+    // (undocumented)
     handleTextInput: (e: InputEvent) => void;
     // @internal
     inputElement: HTMLInputElement;
