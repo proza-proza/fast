@@ -1311,8 +1311,6 @@ export class Picker extends FASTElement {
     inputElement: HTMLInputElement;
     // (undocumented)
     itemTemplate: ViewTemplate;
-    // @internal (undocumented)
-    listboxOpen: boolean;
     // @internal
     menuElement: PickerMenu;
     // @internal (undocumented)
@@ -1321,6 +1319,8 @@ export class Picker extends FASTElement {
     menuFocusOptionId: string | null;
     // @internal (undocumented)
     menuId: string;
+    // @internal (undocumented)
+    menuOpen: boolean;
     // (undocumented)
     options: string;
     // (undocumented)
