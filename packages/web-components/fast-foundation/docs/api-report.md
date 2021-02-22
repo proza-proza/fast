@@ -1306,13 +1306,13 @@ export class Picker extends FASTElement {
     // (undocumented)
     handleRegionLoaded: (e: Event) => void;
     // (undocumented)
-    handleRegionPositionChange: (e: Event) => void;
-    // (undocumented)
     handleTextInput: (e: InputEvent) => void;
     // @internal
     inputElement: HTMLInputElement;
     // (undocumented)
     itemTemplate: ViewTemplate;
+    // (undocumented)
+    maxSelected: number | undefined;
     // @internal
     menuElement: PickerMenu;
     // @internal (undocumented)
