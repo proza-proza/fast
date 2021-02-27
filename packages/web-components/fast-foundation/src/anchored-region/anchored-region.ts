@@ -526,6 +526,10 @@ export class AnchoredRegion extends FASTElement {
         this.baseVerticalOffset = 0;
 
         this.classList.toggle("loaded", false);
+
+        this.style.opacity = "0";
+        this.style.pointerEvents = "none";
+
         this.updateRegionStyle();
     }
 
@@ -879,6 +883,8 @@ export class AnchoredRegion extends FASTElement {
 
         if (!this.initialLayoutComplete) {
             this.initialLayoutComplete = true;
+            this.style.opacity = "1";
+            this.style.pointerEvents = "${void}";
             this.classList.toggle("loaded", true);
             DOM.queueUpdate(() => this.$emit("loaded", this, { bubbles: false }));
         }
