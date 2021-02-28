@@ -883,8 +883,8 @@ export class AnchoredRegion extends FASTElement {
 
         if (!this.initialLayoutComplete) {
             this.initialLayoutComplete = true;
-            this.style.opacity = "1";
-            this.style.pointerEvents = "${void}";
+            this.style.removeProperty("pointer-events");
+            this.style.removeProperty("opacity");
             this.classList.toggle("loaded", true);
             DOM.queueUpdate(() => this.$emit("loaded", this, { bubbles: false }));
         }
