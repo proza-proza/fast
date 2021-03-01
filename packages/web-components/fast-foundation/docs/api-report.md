@@ -86,6 +86,12 @@ export class AnchoredRegion extends FASTElement {
     adoptedCallback(): void;
     anchor: string;
     anchorElement: HTMLElement | null;
+    // @public
+    autoUpdateInterval: number;
+    // @public (undocumented)
+    autoUpdateMode: AutoUpdateMode;
+    // @public
+    autoUpdateRestInterval: number;
     // @internal (undocumented)
     connectedCallback(): void;
     // @internal (undocumented)
@@ -144,6 +150,9 @@ export class ARIAGlobalStatesAndProperties {
     ariaRelevant: "additions" | "additions text" | "all" | "removals" | "text";
     ariaRoledescription: string;
 }
+
+// @public (undocumented)
+export type AutoUpdateMode = "none" | "constant" | "auto";
 
 // @beta
 export type AxisPositioningMode = "uncontrolled" | "locktodefault" | "dynamic";
@@ -1347,7 +1356,7 @@ export class Picker extends FASTElement {
     selection: string;
     // (undocumented)
     updatePosition: () => void;
-    }
+}
 
 // @public
 export class PickerList extends FASTElement {
@@ -1376,14 +1385,7 @@ export class PickerMenu extends FASTElement {
     }
 
 // @public (undocumented)
-export enum PickerMenuPosition {
-    // (undocumented)
-    bottom = "bottom",
-    // (undocumented)
-    dynamic = "dynamic",
-    // (undocumented)
-    top = "top"
-}
+export type PickerMenuPosition = "top" | "bottom" | "dynamic";
 
 // @public
 export const ProgressRingTemplate: import("@microsoft/fast-element").ViewTemplate<BaseProgress, any>;

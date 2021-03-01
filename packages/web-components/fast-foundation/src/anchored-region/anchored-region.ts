@@ -48,6 +48,11 @@ export type HorizontalPosition = "start" | "end" | "left" | "right" | "unset";
 export type VerticalPosition = "top" | "bottom" | "unset";
 
 /**
+ *
+ */
+export type AutoUpdateMode = "none" | "constant" | "auto";
+
+/**
  * @internal
  */
 interface Dimension {
@@ -283,6 +288,36 @@ export class AnchoredRegion extends FASTElement {
     }
 
     /**
+     * Auto position update interval in ms.
+     *
+     * @public
+     * @remarks
+     * HTML Attribute: auto-update-interval
+     */
+    @attr({ attribute: "auto-update-interval" })
+    public autoUpdateInterval: number = 30;
+
+    /**
+     * Auto position update rest interval in ms.
+     *
+     * @public
+     * @remarks
+     * HTML Attribute: auto-update-rest-interval
+     */
+    @attr({ attribute: "auto-update-rest-interval" })
+    public autoUpdateRestInterval: number = 1000;
+
+    /**
+     *
+     *
+     * @public
+     * @remarks
+     * HTML Attribute: auto-update-mode
+     */
+    @attr({ attribute: "auto-update-mode" })
+    public autoUpdateMode: AutoUpdateMode = "none";
+
+    /**
      * The HTML element being used as the anchor
      *
      * @beta
@@ -351,6 +386,8 @@ export class AnchoredRegion extends FASTElement {
 
     private viewportRect: ClientRect | DOMRect | null;
     private regionDimension: Dimension;
+    private lastRegionRect: DOMRect | ClientRect | null;
+    private lastRegionRectTimestamp: number;
 
     private anchorTop: number;
     private anchorRight: number;
@@ -371,6 +408,11 @@ export class AnchoredRegion extends FASTElement {
     private currentDirection: Direction = Direction.ltr;
 
     private static intersectionService: IntersectionService = new IntersectionService();
+
+    /**
+     * The timer that controls the time between position updates
+     */
+    private updateTimer: number | null = null;
 
     /**
      * @internal
@@ -511,6 +553,7 @@ export class AnchoredRegion extends FASTElement {
 
         this.viewportRect = null;
         this.regionDimension = { height: 0, width: 0 };
+        this.lastRegionRect = null;
 
         this.anchorTop = 0;
         this.anchorRight = 0;
@@ -598,6 +641,7 @@ export class AnchoredRegion extends FASTElement {
         if (this.resizeDetector !== null) {
             this.resizeDetector.disconnect();
         }
+        this.clearUpdateTimer();
     };
 
     /**
@@ -632,9 +676,16 @@ export class AnchoredRegion extends FASTElement {
             entries
         );
 
-        if (regionRect === null) {
+        if (
+            regionRect === null ||
+            (this.lastRegionRect !== null &&
+                !this.isRegionRectDifferent(regionRect, this.lastRegionRect))
+        ) {
             return;
         }
+
+        this.lastRegionRect = regionRect;
+        this.lastRegionRectTimestamp = Date.now();
 
         if (!this.initialLayoutComplete) {
             this.containingBlockHeight = regionRect.height;
@@ -643,6 +694,25 @@ export class AnchoredRegion extends FASTElement {
 
         this.updateRegionOffset(regionRect);
         this.requestLayoutUpdate();
+    };
+
+    /**
+     *  compare rects to see if there is enough change to justify a DOM update
+     */
+    private isRegionRectDifferent = (
+        rectA: DOMRect | ClientRect,
+        rectB: DOMRect | ClientRect
+    ): boolean => {
+        const threshold: number = 0.5;
+        if (
+            Math.abs(rectA.top - rectB.top) > threshold ||
+            Math.abs(rectA.right - rectB.right) > threshold ||
+            Math.abs(rectA.bottom - rectB.bottom) > threshold ||
+            Math.abs(rectA.left - rectB.left) > threshold
+        ) {
+            return true;
+        }
+        return false;
     };
 
     /**
@@ -886,6 +956,7 @@ export class AnchoredRegion extends FASTElement {
             this.style.removeProperty("pointer-events");
             this.style.removeProperty("opacity");
             this.classList.toggle("loaded", true);
+            this.startUpdateTimer();
             DOM.queueUpdate(() => this.$emit("loaded", this, { bubbles: false }));
         }
 
@@ -1196,5 +1267,64 @@ export class AnchoredRegion extends FASTElement {
         }
 
         return newRegionDimension;
+    };
+
+    /**
+     * starts the update timer if not currently running
+     */
+    private startUpdateTimer = (): void => {
+        if (
+            (this.initialLayoutComplete &&
+                this.autoUpdateInterval > 0 &&
+                this.autoUpdateMode === "constant") ||
+            this.autoUpdateMode === "auto"
+        ) {
+            this.updateTimer = window.setTimeout((): void => {
+                this.updateTimerTick();
+            }, this.getAutoUpdateInterval());
+        }
+    };
+
+    /**
+     *
+     */
+    private getAutoUpdateInterval = (): number => {
+        if (
+            this.autoUpdateMode === "auto" &&
+            Date.now() - this.lastRegionRectTimestamp > this.autoUpdateRestInterval
+        ) {
+            return this.autoUpdateRestInterval;
+        }
+        return this.autoUpdateInterval;
+    };
+
+    /**
+     *
+     */
+    private updateTimerTick = (): void => {
+        this.clearUpdateTimer();
+        if (this.initialLayoutComplete) {
+            this.update();
+            this.startUpdateTimer();
+        }
+    };
+
+    /**
+     * clears the update timer
+     */
+    private clearUpdateTimer = (): void => {
+        if (this.updateTimer !== null) {
+            clearTimeout(this.updateTimer);
+            this.updateTimer = null;
+        }
+    };
+
+    /**
+     *
+     */
+    private startAutoUpdateSession = (): void => {
+        if (this.autoUpdateMode !== "auto") {
+            return;
+        }
     };
 }
