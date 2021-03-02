@@ -1,5 +1,5 @@
 import { attr, DOM, FASTElement, observable } from "@microsoft/fast-element";
-import { Direction } from "@microsoft/fast-web-utilities";
+import { Direction, eventVisibilityChange } from "@microsoft/fast-web-utilities";
 import { getDirection } from "../utilities";
 import { IntersectionService } from "./intersection-service";
 
@@ -50,7 +50,7 @@ export type VerticalPosition = "top" | "bottom" | "unset";
 /**
  *
  */
-export type AutoUpdateMode = "none" | "constant" | "auto";
+export type AutoUpdateMode = "none" | "constant";
 
 /**
  * @internal
@@ -298,16 +298,6 @@ export class AnchoredRegion extends FASTElement {
     public autoUpdateInterval: number = 30;
 
     /**
-     * Auto position update rest interval in ms.
-     *
-     * @public
-     * @remarks
-     * HTML Attribute: auto-update-rest-interval
-     */
-    @attr({ attribute: "auto-update-rest-interval" })
-    public autoUpdateRestInterval: number = 1000;
-
-    /**
      *
      *
      * @public
@@ -385,9 +375,11 @@ export class AnchoredRegion extends FASTElement {
     private resizeDetector: ResizeObserverClassDefinition | null = null;
 
     private viewportRect: ClientRect | DOMRect | null;
+    private anchorRect: ClientRect | DOMRect | null;
+    private regionRect: ClientRect | DOMRect | null;
+
     private regionDimension: Dimension;
-    private lastRegionRect: DOMRect | ClientRect | null;
-    private lastRegionRectTimestamp: number;
+    private lastLayoutChangeTimestamp: number;
 
     private anchorTop: number;
     private anchorRight: number;
@@ -419,6 +411,7 @@ export class AnchoredRegion extends FASTElement {
      */
     connectedCallback() {
         super.connectedCallback();
+        document.addEventListener(eventVisibilityChange, this.handleVisibilityChange);
         this.initialize();
     }
 
@@ -427,7 +420,7 @@ export class AnchoredRegion extends FASTElement {
      */
     public disconnectedCallback(): void {
         super.disconnectedCallback();
-
+        document.removeEventListener(eventVisibilityChange, this.handleVisibilityChange);
         this.stopObservers();
         this.disconnectResizeDetector();
     }
@@ -459,6 +452,11 @@ export class AnchoredRegion extends FASTElement {
         horizontalOffsetDelta: number,
         verticalOffsetDelta: number
     ): void => {
+        // don't allow offset manipulation while autoupdating active
+        if (this.autoUpdateMode !== "none") {
+            return;
+        }
+
         this.anchorLeft = this.anchorLeft + horizontalOffsetDelta;
         this.anchorRight = this.anchorRight + horizontalOffsetDelta;
 
@@ -552,8 +550,9 @@ export class AnchoredRegion extends FASTElement {
         this.yTransformOrigin = "top";
 
         this.viewportRect = null;
+        this.regionRect = null;
+        this.anchorRect = null;
         this.regionDimension = { height: 0, width: 0 };
-        this.lastRegionRect = null;
 
         this.anchorTop = 0;
         this.anchorRight = 0;
@@ -672,38 +671,74 @@ export class AnchoredRegion extends FASTElement {
 
         this.pendingPositioningUpdate = false;
 
-        const regionRect: DOMRect | ClientRect | null = this.applyIntersectionEntries(
-            entries
-        );
-
-        if (
-            regionRect === null ||
-            (this.lastRegionRect !== null &&
-                !this.isRegionRectDifferent(regionRect, this.lastRegionRect))
-        ) {
+        if (!this.applyIntersectionEntries(entries) || this.regionRect === null) {
             return;
         }
 
-        this.lastRegionRect = regionRect;
-        this.lastRegionRectTimestamp = Date.now();
-
         if (!this.initialLayoutComplete) {
-            this.containingBlockHeight = regionRect.height;
-            this.containingBlockWidth = regionRect.width;
+            this.containingBlockHeight = this.regionRect.height;
+            this.containingBlockWidth = this.regionRect.width;
         }
 
-        this.updateRegionOffset(regionRect);
+        this.updateRegionOffset(this.regionRect);
         this.requestLayoutUpdate();
+    };
+
+    /**
+     *  iterate through intersection entries and apply data
+     */
+    private applyIntersectionEntries = (
+        entries: IntersectionObserverEntry[]
+    ): boolean => {
+        let regionEntry: IntersectionObserverEntry | undefined = entries.find(
+            x => x.target === this
+        );
+        let anchorEntry: IntersectionObserverEntry | undefined = entries.find(
+            x => x.target === this.anchorElement
+        );
+        let viewportEntry: IntersectionObserverEntry | undefined = entries.find(
+            x => x.target === this.viewportElement
+        );
+
+        if (
+            regionEntry === undefined ||
+            viewportEntry === undefined ||
+            anchorEntry === undefined
+        ) {
+            return false;
+        }
+
+        if (
+            this.regionRect === null ||
+            this.anchorRect === null ||
+            this.viewportRect === null ||
+            this.isRectDifferent(this.anchorRect, anchorEntry.boundingClientRect) ||
+            this.isRectDifferent(this.viewportRect, viewportEntry.boundingClientRect) ||
+            this.isRectDifferent(this.regionRect, regionEntry.boundingClientRect)
+        ) {
+            this.regionRect = regionEntry.boundingClientRect;
+            this.anchorRect = anchorEntry.boundingClientRect;
+            this.viewportRect = viewportEntry.boundingClientRect;
+
+            this.lastLayoutChangeTimestamp = Date.now();
+
+            this.handleRegionIntersection(regionEntry);
+            this.handleAnchorIntersection(anchorEntry);
+
+            return true;
+        }
+
+        return false;
     };
 
     /**
      *  compare rects to see if there is enough change to justify a DOM update
      */
-    private isRegionRectDifferent = (
+    private isRectDifferent = (
         rectA: DOMRect | ClientRect,
         rectB: DOMRect | ClientRect
     ): boolean => {
-        const threshold: number = 0.5;
+        const threshold: number = 0.25;
         if (
             Math.abs(rectA.top - rectB.top) > threshold ||
             Math.abs(rectA.right - rectB.right) > threshold ||
@@ -713,27 +748,6 @@ export class AnchoredRegion extends FASTElement {
             return true;
         }
         return false;
-    };
-
-    /**
-     *  iterate through intersection entries and apply data
-     */
-    private applyIntersectionEntries = (
-        entries: IntersectionObserverEntry[]
-    ): DOMRect | ClientRect | null => {
-        let regionRect: DOMRect | ClientRect | null = null;
-        entries.forEach((entry: IntersectionObserverEntry) => {
-            if (entry.target === this) {
-                this.handleRegionIntersection(entry);
-                regionRect = entry.boundingClientRect;
-            } else if (entry.target === this.anchorElement) {
-                this.handleAnchorIntersection(entry);
-            } else {
-                // its the viewport
-                this.viewportRect = entry.boundingClientRect;
-            }
-        });
-        return regionRect;
     };
 
     /**
@@ -1274,28 +1288,15 @@ export class AnchoredRegion extends FASTElement {
      */
     private startUpdateTimer = (): void => {
         if (
-            (this.initialLayoutComplete &&
-                this.autoUpdateInterval > 0 &&
-                this.autoUpdateMode === "constant") ||
-            this.autoUpdateMode === "auto"
+            !document.hidden &&
+            this.initialLayoutComplete &&
+            this.autoUpdateInterval > 0 &&
+            this.autoUpdateMode === "constant"
         ) {
             this.updateTimer = window.setTimeout((): void => {
                 this.updateTimerTick();
-            }, this.getAutoUpdateInterval());
+            }, this.autoUpdateInterval);
         }
-    };
-
-    /**
-     *
-     */
-    private getAutoUpdateInterval = (): number => {
-        if (
-            this.autoUpdateMode === "auto" &&
-            Date.now() - this.lastRegionRectTimestamp > this.autoUpdateRestInterval
-        ) {
-            return this.autoUpdateRestInterval;
-        }
-        return this.autoUpdateInterval;
     };
 
     /**
@@ -1320,11 +1321,11 @@ export class AnchoredRegion extends FASTElement {
     };
 
     /**
-     *
+     * Restarts autoupdating when a hidden document is shown
      */
-    private startAutoUpdateSession = (): void => {
-        if (this.autoUpdateMode !== "auto") {
-            return;
+    private handleVisibilityChange = (): void => {
+        if (!document.hidden && this.autoUpdateMode === "constant") {
+            this.startUpdateTimer();
         }
     };
 }
