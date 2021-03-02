@@ -296,6 +296,16 @@ export class AnchoredRegion extends FASTElement {
      */
     @attr({ attribute: "auto-update-interval" })
     public autoUpdateInterval: number = 30;
+    private autoUpdateIntervalChanged(): void {
+        if (
+            (this as FASTElement).$fastController.isConnected &&
+            this.initialLayoutComplete
+        ) {
+            if (this.autoUpdateMode === "constant") {
+                this.startUpdateTimer();
+            }
+        }
+    }
 
     /**
      *
@@ -306,6 +316,18 @@ export class AnchoredRegion extends FASTElement {
      */
     @attr({ attribute: "auto-update-mode" })
     public autoUpdateMode: AutoUpdateMode = "none";
+    private autoUpdateModeChanged(): void {
+        if (
+            (this as FASTElement).$fastController.isConnected &&
+            this.initialLayoutComplete
+        ) {
+            if (this.autoUpdateMode === "constant") {
+                this.startUpdateTimer();
+            } else {
+                this.clearUpdateTimer();
+            }
+        }
+    }
 
     /**
      * The HTML element being used as the anchor
@@ -589,7 +611,6 @@ export class AnchoredRegion extends FASTElement {
 
         if (this.resizeDetector !== null) {
             this.resizeDetector.observe(this.anchorElement);
-            this.resizeDetector.observe(this);
         }
     };
 
@@ -738,7 +759,7 @@ export class AnchoredRegion extends FASTElement {
         rectA: DOMRect | ClientRect,
         rectB: DOMRect | ClientRect
     ): boolean => {
-        const threshold: number = 0.25;
+        const threshold: number = 0.5;
         if (
             Math.abs(rectA.top - rectB.top) > threshold ||
             Math.abs(rectA.right - rectB.right) > threshold ||
@@ -781,39 +802,10 @@ export class AnchoredRegion extends FASTElement {
             return;
         }
         entries.forEach((entry: ResizeObserverEntry) => {
-            if (entry.target === this) {
-                this.handleRegionResize(entry);
-            } else {
+            if (entry.target === this.anchorElement) {
                 this.update();
             }
         });
-    };
-
-    /**
-     *  Handle region resize events
-     */
-    private handleRegionResize = (entry: ResizeObserverEntry): void => {
-        switch (this.horizontalScaling) {
-            case "content":
-                this.regionDimension.width = entry.contentRect.width;
-                break;
-
-            case "anchor":
-                this.regionDimension.width = this.anchorWidth;
-                break;
-        }
-
-        switch (this.verticalScaling) {
-            case "content":
-                this.regionDimension.height = entry.contentRect.height;
-                break;
-
-            case "anchor":
-                this.regionDimension.height = this.anchorHeight;
-                break;
-        }
-
-        this.requestLayoutUpdate();
     };
 
     /**
@@ -1287,13 +1279,14 @@ export class AnchoredRegion extends FASTElement {
      * starts the update timer if not currently running
      */
     private startUpdateTimer = (): void => {
+        this.clearUpdateTimer();
         if (
             !document.hidden &&
             this.initialLayoutComplete &&
             this.autoUpdateInterval > 0 &&
             this.autoUpdateMode === "constant"
         ) {
-            this.updateTimer = window.setTimeout((): void => {
+            this.updateTimer = window.setInterval((): void => {
                 this.updateTimerTick();
             }, this.autoUpdateInterval);
         }
@@ -1303,10 +1296,11 @@ export class AnchoredRegion extends FASTElement {
      *
      */
     private updateTimerTick = (): void => {
-        this.clearUpdateTimer();
         if (this.initialLayoutComplete) {
             this.update();
-            this.startUpdateTimer();
+        }
+        if (document.hidden || this.autoUpdateMode !== "constant") {
+            this.clearUpdateTimer();
         }
     };
 
@@ -1315,7 +1309,7 @@ export class AnchoredRegion extends FASTElement {
      */
     private clearUpdateTimer = (): void => {
         if (this.updateTimer !== null) {
-            clearTimeout(this.updateTimer);
+            window.clearInterval(this.updateTimer);
             this.updateTimer = null;
         }
     };
