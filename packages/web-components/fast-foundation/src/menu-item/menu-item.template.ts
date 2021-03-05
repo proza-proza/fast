@@ -1,4 +1,5 @@
-import { children, elements, html, ref, slotted, when } from "@microsoft/fast-element";
+import { html, ref, when } from "@microsoft/fast-element";
+import type { ViewTemplate } from "@microsoft/fast-element";
 import { endTemplate, startTemplate } from "../patterns/start-end";
 import { MenuItem, MenuItemRole } from "./menu-item";
 
@@ -6,7 +7,7 @@ import { MenuItem, MenuItemRole } from "./menu-item";
  * The template for the {@link @microsoft/fast-foundation#(MenuItem:class)} component.
  * @public
  */
-export const MenuItemTemplate = html<MenuItem>`
+export const MenuItemTemplate: ViewTemplate<MenuItem> = html`
     <template
         role="${x => x.role}"
         aria-haspopup="${x => (x.submenu !== undefined ? "menu" : void 0)}"
